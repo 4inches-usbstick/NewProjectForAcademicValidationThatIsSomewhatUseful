@@ -1,1 +1,1 @@
-::newrequest [class[newfile>payloadchecksum=={checksum}; packetsize=={pktbytes}; destfilepath=={destiny}; origin=={source}; host=={remote}; identifier=={id}; sender={self}]]
+::newrequest [class[newfile>payloadchecksum=={checksum}; packetsize=={pktbytes}; destfilepath=={destiny}; origin=={source}; host=={remote}; identifier=={id}; sender=={self};]]
