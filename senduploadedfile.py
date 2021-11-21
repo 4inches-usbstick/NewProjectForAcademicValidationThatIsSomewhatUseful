@@ -95,6 +95,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     print('BadVerdict -- The transfer was rejected by the remote, details: ',data)
             if res['type'] == 'GoodVerdict':
                     print('GoodVerdict -- The transfer was accepted by the remote')
+                    f = open('config.txt', 'r')
+                    ccfg = f.read()
+                    f.close()
+                    if cd.get_offline(ccfg, 'application_config-endonsend', 'val') == '1':
+                        exit()
             if res['type'] == 'ResAcc' and not hold:
                     #instruction given to hand a file over. files must be transmitted in serial order and cannot be done all at once
                     print(res['c'])

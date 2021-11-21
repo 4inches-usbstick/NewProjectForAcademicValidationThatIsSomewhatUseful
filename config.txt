@@ -1,0 +1,5 @@
+class[application_config>
+sendport==65432;
+takeport==1711;
+endonsend==0;
+]
