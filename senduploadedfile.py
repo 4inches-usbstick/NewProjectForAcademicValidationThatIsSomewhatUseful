@@ -2,8 +2,12 @@ import cbedata as cd
 import socket
 import time
 
+f = open('config.txt', 'r')
+ccfg = f.read()
+f.close()
+                    
 HOST = ''  
-PORT = 65432
+PORT = int(cd.get_offline(ccfg, 'application_config-sendport', 'val') )
 print('Transponder is in SEND mode, reachable at port',PORT)
 
 class FileTransmission:

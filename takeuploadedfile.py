@@ -3,7 +3,11 @@ import time, random
 import cbedata
 import hashlib
 
-PORT = 1711
+f = open('config.txt', 'r')
+ccfg = f.read()
+f.close()
+
+PORT = int(cbedata.get_offline(ccfg, 'application_config-takeport', 'val') )
 print('Transponder is in RECV mode, reachable at port',PORT)
 
 def parse_resp(resp):
@@ -107,8 +111,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         items[ide] = FileTransmission(data.decode('ascii') )
                         dd = data.decode('ascii')
                         #creates a file
-                        inp = input(f'Someone is waiting to transfer a file. The details are as follows:\n-----\n{dd}\n-----\nAccept? [Y/N] ')
-                        #inp = 'Y'
+                        inp = print(f'Someone is waiting to transfer a file. The details are as follows:\n-----\n{dd}\n-----\nAccept? [Y/N] ')
+                        inp = 'Y'
                         if inp == 'Y':
                             sa.sendall(bytes(f'R@{ide} ResAcc [{dd}]', 'ascii'))
                         else:
@@ -116,10 +120,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
                     if ds['type'] == 'Done':
                         ide = ds['id']
-                        try: theircs = items[identifier[1:]].cs
+                        try: theircs = items[identifier[1:]].cs.upper()
                         except:
                             sa.sendall( bytes('R'+f'{identifier} BadVerdict [Invalid Identifier]','ascii'))
-                            theircs = 'Invalid identifier.'
+                            theircs = 'Invalid identifier.'.upper()
 
                         try:
                             f = open(items[identifier[1:]].fp, 'rb')
@@ -128,20 +132,21 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         except:
                             contents = 'invalid'
                             
-                        try: currentcs = hashlib.sha256(contents).hexdigest()
+                        try: currentcs = hashlib.sha256(contents).hexdigest().upper()
                         except: currentcs = 'invalid input or other exception on handling'
                         print(f'{ide} INFO: Calculated SHA256 =',currentcs)
                         print(f'{ide} INFO: Preflight SHA256 =',theircs)
                         print(f'{ide} INFO: Equality =',currentcs==theircs)
                         print(f'{ide} INFO: b64 size =',len(contents),'bytes')
-                        sss = input('Accept this file? [Y/N] ')
+                        sss = print('Accept this file? [Y/N] Y')
+                        sss = 'Y'
 
                         if sss == 'Y':
                             sa.sendall( bytes('R'+f'{identifier} GoodVerdict []','ascii'))
-                            print('OK! sent verdict.')
+                            print('OK! sent GOOD verdict.')
                         else:
                             sa.sendall( bytes('R'+f'{identifier} BadVerdict [User rejected file]','ascii'))
-                            print('OK! sent verdict.')
+                            print('OK! sent BAD verdict.')
 
                         if ds['type'] == 'Stop' or ds['type'] == 'Error':
                             print('WARN/STOP/NOTICE: Sender issued an error message, details:',data)
